@@ -118,3 +118,8 @@ dist
 # Project specific
 output
 temp\b
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
