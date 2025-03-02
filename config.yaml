@@ -10,20 +10,22 @@ units:
 points:
   zones:
     main:
+      anchor.shift: [150,-150] # Fix KiCad placement
       key:
         padding: 1ky
         spread: 1kx
-        anchor.shift: [50,-100] # Fix KiCad placement
         tags:
           u1: true
       columns:
         outer:
+          key:
+            col_net: P6
           rows:
             bottom.skip: true
             top.skip: true
             home:
-              column_net: P20
-              rotate: 90
+              row_net: P4
+              rotate: 270
               padding: -0.5
               bind: [0, 0.2]
               shift: [0.5, 0]
@@ -33,53 +35,58 @@ points:
         pinky:
           key:
             stagger: 0.1ky
+            col_net: P7
           rows:
             top:
-              column_net: P5
+              row_net: P3
             home:
-              column_net: P6
+              row_net: P4
             bottom:
-              column_net: P7
+              row_net: P5
         ring:
           key:
             stagger: 0.6ky
+            col_net: P8
           rows:
             top:
-              column_net: P16
+              row_net: P3
             home:
-              column_net: P3
+              row_net: P4
             bottom:
-              column_net: P4
+              row_net: P5
         middle:
           key:
             stagger: 0.25ky
+            col_net: P9
           rows:
             top:
-              column_net: P18
+              row_net: P3
             home:
-              column_net: P19
+              row_net: P4
             bottom:
-              column_net: P21
+              row_net: P5
         index:
           key:
             stagger: -0.25ky
+            col_net: P1
           rows:
             top:
-              column_net: P0
+              row_net: P3
             home:
-              column_net: P14
+              row_net: P4
             bottom:
-              column_net: P15
+              row_net: P5
         inner:
           key:
             stagger: -0.15ky
+            col_net: P0
           rows:
             top:
-              column_net: P1
+              row_net: P3
             home:
-              column_net: P20
+              row_net: P4
             bottom:
-              column_net: P10
+              row_net: P5
       rows:
         bottom:
         home:
@@ -97,14 +104,16 @@ points:
       columns:
         tuck:
           key:
+            col_net: P1
             bind: [4, 0]
             tags:
               u1: true
           rows:
             home:
-              column_net: P8
+              row_net: P10
         reach:
           key:
+            col_net: P0
             spread: kx
             splay: -15
             rotate: 90
@@ -115,7 +124,7 @@ points:
               u15: true
           rows:
             home:
-              column_net: P9
+              row_net: P10
 outlines:
   raw:
     - what: rectangle
@@ -185,53 +194,44 @@ pcbs:
         what: ceoloide/switch_choc_v1_v2
         where: true
         params:
-          from: "{{column_net}}"
-          to: GND
+          from: "{{col_net}}"
+          to: "{{colrow}}"
           include_corner_marks: true
-          include_keycap: true
-          keycap_height: 16.5
-          keycap_width: 17.5
+          include_keycap: false
+          keycap_height: ky - 0.5
+          keycap_width: kx - 0.5
           reversible: true
-          solder: true
+          solder: false
           hotswap: true
           choc_v2_support: false
-          outer_pad_width_front: 2.0
-          outer_pad_width_back: 2.0
+          outer_pad_width_front: 1.9
+          outer_pad_width_back: 1.9
+      diode:
+        what: ceoloide/diode_tht_sod123
+        where: true
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+          reversible: true
+          include_thru_hole_smd_pads: true
+          include_tht: true
+        adjust:
+          shift: [0, -4.2]
       mcu:
-        what: promicro_pretty
+        what: ceoloide/mcu_nice_nano
         where:
           ref: main_inner_home
+        params:
+          reverse_mount: true
+          reversible: true
+          only_required_jumpers: true
         adjust:
-          shift: [18, -2]
-          rotate: 270
-        # params:
-        #   RAW: RAW
-        #   GND: GND
-        #   RST: RST
-        #   VCC: VCC
-        #   P21: P21
-        #   P20: P20
-        #   P19: P19
-        #   P18: P18
-        #   P15: P15
-        #   P14: P14
-        #   P16: P16
-        #   P10: P10
-        #   P1: P1
-        #   P0: P0
-        #   P2: P2
-        #   P3: P3
-        #   P4: P4
-        #   P5: P5
-        #   P6: P6
-        #   P7: P7
-        #   P8: P8
-        #   P9: P9
+          shift: [kx + 0.2, 0.8]
       trrs:
         what: ceoloide/trrs_pj320a
         where:
           ref: main_inner_bottom
-          shift: [27.2, -0.3ky]
+          shift: [27.2, -0.14ky]
         adjust:
           rotate: 270
         params:
@@ -240,4 +240,67 @@ pcbs:
           TP: VCC # Tip and Ring 1 are joined together
           reversible: true
           symmetric: true
-
+      mount_outer_home_above:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_outer_home
+          shift: [0.5kx + 1.4, -5.5]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_outer_home_below:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_outer_home
+          shift: [-0.5kx - 1.4, -5.5]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_reach_home_above:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: thumb_reach_home
+          shift: [0.5kx + 1.4, -5.5]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_reach_home_below:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: thumb_reach_home
+          shift: [-0.5kx - 1.4, -5.5]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_ring_bottom:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_ring_bottom
+          shift: [-0.3kx, -15.6]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_ring_top:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_ring_top
+          shift: [0.5kx, 0.35]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_index_bottom:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_index_bottom
+          shift: [0.18kx, -25.5]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
+      mount_index_top:
+        what: ceoloide/mounting_hole_npth
+        where:
+          ref: main_index_top
+          shift: [0.5kx, -2.1]
+        params:
+          hole_size: 3.2
+          hole_drill: 3.2
